@@ -11,8 +11,8 @@ def generate_qr_code(url):
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save("qr_code.png")
+    img.save("qr_code2.png")
 
 if __name__ == "__main__":
-    url = "http://localhost:8080/data?id=1"
+    url = "http://localhost:8080/data?id=2"
     generate_qr_code(url)

@@ -38,7 +38,7 @@ const qrData = sequelize.define('qr-data',{
       allowNull:true
   },
   Phone:{
-      type:DataTypes.INTEGER,
+      type:DataTypes.STRING,
       allowNull:true
   },
   address:{
@@ -66,7 +66,7 @@ const handleRequest = async (req, res) => {
             allowNull:true
         },
         Phone:{
-            type:DataTypes.INTEGER,
+            type:DataTypes.STRING,
             allowNull:true
         },
         address:{
@@ -113,17 +113,22 @@ app.post('/submit-form', async (req, res) => {
     const { name, address, phone,id } = req.body;
 
     // Insert the form data into the database and set isActive flag to true
-    // Replace this with your Sequelize code to insert into the database
-    // Example:
-    // YourModel.create({ id: 1, name, address, phone, isActive: true })
-
+  
     // Respond with success status
  
     const referer = req.headers.referer;
     const url = new URL(referer);
     const id2 = url.searchParams.get('id');
 
-    console.log("id "+id2);
+    console.log("Going to save data in DB "+id2);
+     // Insert the form data into the database and set isActive flag to true
+     const insertedData = await qrData.create({
+      id: id2, // Assuming id is provided in the request body
+      name,
+      Phone: phone, // Assuming phone is provided in the request body
+      address,
+      isActive: true // Set isActive flag to true
+    });
     res.sendStatus(200);
   } catch (error) {
     console.error('Error submitting form:', error);

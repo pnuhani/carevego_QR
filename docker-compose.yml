@@ -1,6 +1,14 @@
 version: '3.7'
 
 services:
+  web:
+    build:
+      context: ./react/client # Path to your React application
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Assuming your React app runs on port 3000
+    depends_on:
+      - app
   db:
         image: 'postgres:12'
         environment:
