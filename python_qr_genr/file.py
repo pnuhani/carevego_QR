@@ -54,19 +54,23 @@ if __name__ == "__main__":
 
     # Generate and save QR codes in a loop
     for _ in range(num_qr_codes):
-        random_hash = generate_random_hash()
-        url = f"http://localhost:8080/data?id={random_hash}"
-        generate_qr_code(url, random_hash)
+        while True:  # Keep trying until a unique qrid is generated
+            random_hash = generate_random_hash()
 
-        # Insert the random hash into the MongoDB collection
-        try:
-            collection.insert_one({
-                "qrid": random_hash,
-                "isactivated": False
-            })
-            print(f"Inserted QR code with qrid: {random_hash}")
-        except Exception as e:
-            print(f"Error inserting QR code with qrid {random_hash}: {e}")
+            # Check if the hash already exists in the database
+            if collection.find_one({"qrid": random_hash}) is None:
+                url = f"http://localhost:8080/data?id={random_hash}"
+                generate_qr_code(url, random_hash)
+
+                # Insert the random hash into the MongoDB collection
+                collection.insert_one({
+                    "qrid": random_hash,
+                    "isactivated": False
+                })
+                print(f"Inserted QR code with qrid: {random_hash}")
+                break  # Exit the loop once a unique qrid is successfully processed
+            else:
+                print(f"Duplicate qrid found: {random_hash}, retrying...")
 
     print("QR code generation and insertion completed.")
     client.close()
