@@ -2,6 +2,8 @@ import qrcode
 import random
 import string
 from pymongo import MongoClient
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime
 
 def generate_qr_code(url, random_hash):
     qr = qrcode.QRCode(
@@ -13,8 +15,27 @@ def generate_qr_code(url, random_hash):
     qr.add_data(url)
     qr.make(fit=True)
 
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save(f"qr_code_{random_hash}.png")
+    img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+
+    # Add the random hash to the image
+    draw = ImageDraw.Draw(img)
+    font_size = 15  # Adjust font size as needed
+    try:
+        # Use a system font (fallback to default if not available)
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except:
+        # Use default font if "arial.ttf" is not available
+        font = ImageFont.load_default()
+
+    # Position text in the lower-left corner
+    text_position = (10, img.height - 20)  # Adjust for padding
+    draw.text(text_position, random_hash, fill="black", font=font)
+
+    # Generate file name with ddMMyyyy format
+    current_date = datetime.now().strftime("%d%m%Y")
+    file_name = f"{current_date}_{random_hash}.png"
+
+    img.save(file_name)
 
 def generate_random_hash(length=8):
     characters = string.ascii_letters + string.digits
